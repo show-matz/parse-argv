@@ -188,8 +188,8 @@ argv:get-argv => result
 
 (defmethod argv:convert-value ((type (eql :number)) string-data default-val)
   (if (null string-data)
-	  default-val
-	  (parse-number:parse-number string-data :float-format 'double-float)))
+      default-val
+      (parse-number:parse-number string-data :float-format 'double-float)))
 ```
 
 　これにより、 `argv:parse-argv` に渡すルールにおいて `:number` を使用できる
@@ -207,8 +207,8 @@ argv:get-argv => result
 ```
 (defmethod argv:convert-value ((type (eql :any)) string-data default-val)
   (if (null string-data)
-	  default-val
-	  (read-from-string string-data)))
+      default-val
+      (read-from-string string-data)))
 ```
 
 　まず、文字列を渡したい時にたとえば追加のダブルクオートが必要になります。

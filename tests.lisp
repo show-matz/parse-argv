@@ -10,10 +10,10 @@
 
 (defun check-err-impl (expected-error input option-rules param-rules)
   (handler-case
-	  (prog1 nil
-		(argv:parse input option-rules param-rules))
-	(error (e)
-	  (typep e expected-error))))
+      (prog1 nil
+        (argv:parse input option-rules param-rules))
+    (error (e)
+      (typep e expected-error))))
 
 (defmacro check-error (expected-error (&rest input) (&rest option-rules) (&rest param-rules))
   `(5am:is (check-err-impl ',expected-error ',input ',option-rules ',param-rules)))
@@ -34,34 +34,34 @@
   (check-error simple-error ("none")   nil (:boolean))    ; error: invalid boolean value.
   (check-error simple-error ("oops")   nil (:unknown))    ; error: invalid type.
   (check-equal (123   :FOO  "string" T)
-			   ("123" "foo" "string" "true")
-			   nil
-			   (:integer :keyword :string :boolean))
+               ("123" "foo" "string" "true")
+               nil
+               (:integer :keyword :string :boolean))
 
   ;; optional parameters.
   (check-equal (T      "string"  123 :BAR)
-			   ("true" "string" "123")
-			   nil
-			   (:boolean :string &optional (:integer 0) (:keyword :bar)))
+               ("true" "string" "123")
+               nil
+               (:boolean :string &optional (:integer 0) (:keyword :bar)))
   (check-error simple-error
-			   ("string" "123")
-			   nil
-			   (:string &optional (:integer 0) &optional (:keyword :bar))) ; error: duplicated &optional.
+               ("string" "123")
+               nil
+               (:string &optional (:integer 0) &optional (:keyword :bar))) ; error: duplicated &optional.
   ;; rest parameters.
   (check-equal (T      "string" ("123" "true" "bar"))
-			   ("true" "string"  "123" "true" "bar")
-			   nil
-			   (:boolean :string &rest))
+               ("true" "string"  "123" "true" "bar")
+               nil
+               (:boolean :string &rest))
 
   ;; parameter length.
   (check-error simple-error
-			   ("true")
-			   nil
-			   (:boolean :string &optional (:integer 0))) ; error: too less parameters.
+               ("true")
+               nil
+               (:boolean :string &optional (:integer 0))) ; error: too less parameters.
   (check-error simple-error
-			   ("true" "string" "123" "extra")
-			   nil
-			   (:boolean :string &optional (:integer 0))) ; error: too more parameters.
+               ("true" "string" "123" "extra")
+               nil
+               (:boolean :string &optional (:integer 0))) ; error: too more parameters.
 
   ;; options.
   (check-equal (:EXTRA T) ("-x")          ((:extra #\x))                      nil)
@@ -91,14 +91,14 @@
 
   ;; end of options.
   (check-equal (5 :COUNT 3)
-			   ("-c" "--" "5")
-			   ((:count #\c "--count" :integer 3))
-			   (:integer))
+               ("-c" "--" "5")
+               ((:count #\c "--count" :integer 3))
+               (:integer))
 
   ;; all stuff.
   (check-equal (123 "string" :BAR ("0" "x") :ALL T :MODE :EXTRA :COUNT 3)
-			   ("--all" "--mode=extra" "-c" "--" "123" "string" "bar" "0" "x")
-			   ((:all   #\a "--all")
-				(:mode  #\m "--mode"  :keyword :NORMAL)
-				(:count #\c "--count" :integer 3))
-			   (:integer :string &optional (:keyword :foo) &rest)))
+               ("--all" "--mode=extra" "-c" "--" "123" "string" "bar" "0" "x")
+               ((:all   #\a "--all")
+                (:mode  #\m "--mode"  :keyword :NORMAL)
+                (:count #\c "--count" :integer 3))
+               (:integer :string &optional (:keyword :foo) &rest)))
